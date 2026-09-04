@@ -10,7 +10,7 @@
 #define GPU_RUNS 100
 
 __global__ void addKernel(float* A, float *B, float *C, int length) {
-    const unsigned int gid = threadIdx.x;
+    const unsigned int gid = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (gid < length) {
         C[gid] = A[gid] + B[gid];
@@ -66,10 +66,11 @@ int main(int argc, char** argv) {
 
     int threads = 256;
     int blocks = cuda::ceil_div(N, threads);
+    // int blocks = (N + threads - 1) / threads; // If cuda does not support the above, use this as replacement and remove <cuda/cmath>
 
     // a small number of dry runs
     for(int r = 0; r < 1; r++) {
-        addKernel<<<blocks, threads>>>(da_in, db_in, d_out);
+        addKernel<<<blocks, threads>>>(da_in, db_in, dc_out, N);
     }
   
     { // execute the kernel a number of times;
@@ -80,7 +81,7 @@ int main(int argc, char** argv) {
         gettimeofday(&t_start, NULL);
 
         for(int r = 0; r < GPU_RUNS; r++) {
-            addKernel<<<blocks, threads>>>(da_in, db_in, d_out);
+            addKernel<<<blocks, threads>>>(da_in, db_in, dc_out, N);
         }
         cudaDeviceSynchronize();
         // ^ `cudaDeviceSynchronize` is needed for runtime
@@ -116,7 +117,7 @@ int main(int argc, char** argv) {
     //for(unsigned int i=0; i<N; ++i) printf("%.6f\n", h_out[i]);
 
     for(unsigned int i=0; i<N; ++i) {
-        float actual   = h_out[i];
+        float actual   = hc_out[i];
         float expected = ha_in[i] + hb_in[i]; 
         if( actual != expected ) {
             printf("Invalid result at index %d, actual: %f, expected: %f. \n", i, actual, expected);
@@ -131,5 +132,5 @@ int main(int argc, char** argv) {
     free(hc_out);
     cudaFree(da_in);
     cudaFree(db_in);
-    cudaFree(d_out);
+    cudaFree(dc_out);
 }

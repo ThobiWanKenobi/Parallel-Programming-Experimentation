@@ -1,0 +1,3 @@
+N is: 100000009
+The kernel took on average 1430.630000 microseconds. GB/sec: 559.194251 
+Successful Validation.
