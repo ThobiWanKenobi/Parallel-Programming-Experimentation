@@ -8,9 +8,12 @@
 
 #define GPU_RUNS 100
 
-__global__ void addKernel(float* A, float *B, float *C) {
+__global__ void addKernel(float* A, float *B, float *C, int length) {
     const unsigned int gid = threadIdx.x;
-    C[gid] = A[gid] + B[gid];
+
+    if (gid < length) {
+        C[gid] = A[gid] + B[gid];
+    }
 }
 
 int main(int argc, char** argv) {
@@ -60,9 +63,12 @@ int main(int argc, char** argv) {
     cudaMemcpy(da_in, ha_in, mem_size, cudaMemcpyHostToDevice);
     cudaMemcpy(db_in, hb_in, mem_size, cudaMemcpyHostToDevice);
 
+    int threads = 256;
+    int blocks = cuda::ceil_div(N, threads);
+
     // a small number of dry runs
     for(int r = 0; r < 1; r++) {
-        addKernel<<< 1, N>>>(da_in, db_in, d_out);
+        addKernel<<<blocks, threads>>>(da_in, db_in, d_out);
     }
   
     { // execute the kernel a number of times;
@@ -73,7 +79,7 @@ int main(int argc, char** argv) {
         gettimeofday(&t_start, NULL);
 
         for(int r = 0; r < GPU_RUNS; r++) {
-            mul2Kernel<<< 1, N>>>(d_in, d_out);
+            addKernel<<<blocks, threads>>>(da_in, db_in, d_out);
         }
         cudaDeviceSynchronize();
         // ^ `cudaDeviceSynchronize` is needed for runtime
