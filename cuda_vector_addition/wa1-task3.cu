@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <cuda_runtime.h>
+#include <cuda/cmath>
 
 #include "helper.h"
 
