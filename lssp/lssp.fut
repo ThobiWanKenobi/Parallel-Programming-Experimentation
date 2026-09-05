@@ -22,9 +22,9 @@ let lss_redOp (pred2: i32 -> i32 -> bool)
   -- TODO: fill in the 5 missing values (indicated by `???`).
   let segments_connect = if x_len == 0 then true else if y_len == 0 then true else pred2 x_last y_first
 
-  let new_lss = max(x_lss, max(y_lss, x_lcs + y_lis))
-  let new_lis = max(x_lis, x_len + y_lis)
-  let new_lcs = max(y_lcs, x_lcs + y_len)
+  let new_lss = if segments_connect then max x_lss (max y_lss (x_lcs + y_lis)) else max x_lss y_lss
+  let new_lis = if segments_connect then max x_lis (x_len + y_lis) else x_lis
+  let new_lcs = if segments_connect then max y_lcs (x_lcs + y_len) else y_lcs
   let new_len = x_len + y_len
 
   let new_first = if x_len == 0 then y_first else x_first
