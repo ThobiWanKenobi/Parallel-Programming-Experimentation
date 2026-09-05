@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
         gettimeofday(&t_end, NULL);
         timeval_subtract(&t_diff, &t_end, &t_start);
         elapsed = (1.0 * (t_diff.tv_sec*1e6+t_diff.tv_usec)) / GPU_RUNS;
-        double gigabytespersec = (2.0 * N * 4.0) / (elapsed * 1000.0);
+        double gigabytespersec = (3.0 * N * 4.0) / (elapsed * 1000.0);
         printf("The kernel took on average %f microseconds. GB/sec: %f \n", elapsed, gigabytespersec);
         
     }
