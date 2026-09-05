@@ -9,6 +9,17 @@
 --    5
 -- }
 
+-- Parallel Longest Satisfying Segment with zeros predicate
+--
+-- ==
+-- entry: main seq
+-- compiled input {
+--    [0, 0, 0, 1i32, -2, -1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -5, 2i32, 0, 0, 0, 0]
+-- }
+-- output {
+--    9
+-- }
+
 import "lssp-seq"
 import "lssp"
 
