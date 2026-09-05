@@ -9,6 +9,17 @@
 --    5i32
 -- }
 
+-- Parallel Longest Satisfying Segment - Same
+--
+-- ==
+-- entry: main seq
+-- compiled input {
+--    [-2, 0, 0, 0, 1i32, 5i32, 2i32, 2, 2, 2i32, 2, 2, 2, -5, -1, 0, 8, 10i32]
+-- }
+-- output {
+--    7
+-- }
+
 import "lssp"
 import "lssp-seq"
 
