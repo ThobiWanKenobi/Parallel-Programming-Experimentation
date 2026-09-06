@@ -123,11 +123,9 @@ let spMatVctMult [num_elms][vct_len][num_rows]
                  (mat_shp: [num_rows]i64)
                  (vct: [vct_len]f32)
                    : [num_rows]f32 =
-
-  let shp_sc = scan (+) 0 mat_shp
-  let mat_flg' = mkFlagArray mat_shp 0 (replicate num_rows true)
-  let mat_flg = mat_flg' :> [n]bool -- dynamic size cast
-  let sc_mat = sgmSumF32 mat_flg mat_val
+  let mat_flg' = mkFlagArray mat_shp false (replicate num_rows true)
+  let mat_flg = mat_flg' :> [num_elms]bool -- dynamic size cast
+  let sc_mat = sgmSumF32 mat_flg (map (\(i, x) -> x * vct[i]) mat_val)
   let indsp1 = scan (+) 0 mat_shp
   let res = map2 (\shp ip1 -> if shp == 0 then 0.0f32 else sc_mat[ip1-1]) mat_shp indsp1
    in res
