@@ -8,6 +8,16 @@
 -- }
 -- output { [3.0f32, 0.0f32, -4.0f32, 6.0f32, 9.0f32] }
 
+-- Flat-Parallel implementation of Sparse Matrix-Vector Multiplication - Test
+-- ==
+-- compiled input {
+--   [0i64, 2i64, 4i64, 3i64, 1i64, 4i64, 0i64, 1i64, 2i64, 3i64]
+--   [1.0f32, 2.0f32, -1.0f32, 5.0f32, -1.0f32, 2.0f32, 2.0f32, 1.0f32, 3.0f32, -1.0f32]
+--   [3i64, 1i64, 2i64, 4i64]
+--   [1.0f32, -2.0f32, 0.0f32, 3.0f32, 4.0f32]
+-- }
+-- output { [-3.0f32, 15.0f32, 10.0f32, -3.0f32] }
+
 ------------------------
 --- Sgm Scan Helpers ---
 ------------------------
