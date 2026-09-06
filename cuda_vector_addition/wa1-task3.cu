@@ -114,7 +114,6 @@ int main(int argc, char** argv) {
         elapsed_gpu = (1.0 * (t_diff.tv_sec*1e6+t_diff.tv_usec)) / GPU_RUNS;
         double gigabytespersec = (3.0 * N * 4.0) / (elapsed_gpu * 1000.0);
         printf("The kernel took on average %f microseconds. GB/sec: %f \n", elapsed_gpu, gigabytespersec);
-        
     }
 
     {
