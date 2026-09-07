@@ -73,8 +73,8 @@ int main(int argc, char** argv) {
     cudaMemcpy(db_in, hb_in, mem_size, cudaMemcpyHostToDevice);
 
     int threads = 256;
-    int blocks = cuda::ceil_div(N, threads);
-    // int blocks = (N + threads - 1) / threads; // If cuda does not support the above, use this as replacement and remove <cuda/cmath>
+    // int blocks = cuda::ceil_div(N, threads);
+    int blocks = (N + threads - 1) / threads; // If cuda does not support the above, use this as replacement and remove <cuda/cmath>
 
     // a small number of dry runs
     for(int r = 0; r < 1; r++) {

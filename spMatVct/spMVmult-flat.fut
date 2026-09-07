@@ -18,6 +18,10 @@
 -- }
 -- output { [-3.0f32, 15.0f32, 10.0f32, -3.0f32] }
 
+-- Flat-Parallel implementation of Sparse Matrix-Vector Multiplication - Benchmarking
+-- ==
+-- compiled input @ data/large.in
+
 ------------------------
 --- Sgm Scan Helpers ---
 ------------------------

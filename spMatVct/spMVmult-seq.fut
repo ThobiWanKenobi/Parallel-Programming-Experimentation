@@ -8,6 +8,10 @@
 -- }
 -- output { [3.0f32, 0.0f32, -4.0f32, 6.0f32, 9.0f32] }
 
+-- Sequential implementation of Sparse Matrix-Vector Multiplication - Benchmarking
+-- ==
+-- compiled input @ data/large.in
+
 let spMatVctMult [vct_len][num_rows]
                  (mat: [](i64,f32))
                  (shp: [num_rows]i64)

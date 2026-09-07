@@ -1,5 +1,5 @@
 N is: 100000009
-The kernel took on average 1438.160000 microseconds. GB/sec: 834.399586 
-The CPU took on average 65959.000000 microseconds. GB/sec: 18.193122 
-The acceleration speedup is 45.863464.
+The kernel took on average 894.480000 microseconds. GB/sec: 1341.561698 
+The CPU took on average 87600.000000 microseconds. GB/sec: 13.698631 
+The acceleration speedup is 97.933995.
 Successful Validation.

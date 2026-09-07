@@ -20,6 +20,18 @@
 --    9
 -- }
 
+-- Longest Satisfying Segment, zeros predicate - parallel
+-- ==
+-- entry: main
+-- "10M"  input @ data/lss_10M.in
+-- "100M" input @ data/lss_100M.in
+
+-- Longest Satisfying Segment, zeros predicate - sequential
+-- ==
+-- entry: seq
+-- "10M"  input @ data/lss_10M.in
+-- "100M" input @ data/lss_100M.in
+
 import "lssp-seq"
 import "lssp"
 
