@@ -36,9 +36,27 @@ let primesFlat (n: i64) : []i64 =
       -- Also note that `not_primes` has flat length equal to `flat_size`
       --  and the shape of `composite` is `mult_lens`. 
 
-      let composite = map (\ p -> let mm1 = (len / p) - 1
-                                  in  map (\ j -> j * p ) (map (+2) (iota mm1))
-                          ) sq_primes
+      -- let composite = map (\ p -> let mm1 = (len / p) - 1
+      --                             in  map (\ j -> j * p ) (map (+2) (iota mm1))
+      --                     ) sq_primes
+
+      let m = map (\p -> len / p) sq_primes
+      let mm1 = map (-1) m
+      -- let iot = iota mm1
+      let inds = scan (+) 0 mm1 |> map2 (\(p, t) -> t - p) mm1
+      let size = (last inds) + (last arr)
+      let flag = scatter (replicate size 0) inds mm1
+      let tmp = replicate size 1
+      let iot = sgmScan (+) 0 flag temp -- probably need to make sgmScan exclusive
+
+      let twom = map (+2) iot
+      -- let rp = replicate mm1 p
+      let inds2 = scan (+) 0 mm1 |> map2 (\(p, t) -> t - p) mm1
+      let size2 = (last inds2) + (last mm1)
+      let flag2 = scatter (replicate size2 0) inds2 mm1
+      let vals = scatter (replicate size2 0) inds2 sq_primes
+      let rp = sgmScan (+) 0 flag2 vals -- probably need to make sgmScan exclusive
+      let composite = map2 (\(j, p) -> j*p) twom rp
       
       let not_primes = reduce (++) [] composite
 
