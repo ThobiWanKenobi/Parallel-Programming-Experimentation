@@ -181,12 +181,25 @@ __device__ inline typename OP::RedElTp
 scanIncWarp( volatile typename OP::RedElTp* ptr, const uint32_t idx ) {
     const uint32_t lane = idx & (WARP-1);
 
-    if(lane==0) {
-        #pragma unroll
-        for(int i=1; i<WARP; i++) {
-            ptr[idx+i] = OP::apply(ptr[idx+i-1], ptr[idx+i]);
+    #pragma unroll
+    for (uint32_t d = 0; d < lgWARP; d++) {
+        uint32_t h = (1<<d);
+
+        if (lane >= h) {
+            ptr[i] = OP::apply(ptr[lane-h], ptr[lane]);
         }
+
+        // for (uint32_t i = h; h < WARP; i++) {
+        //     ptr[i] = OP::apply(ptr[i-h], ptr[i]);
+        // }
     }
+
+    // if(lane==0) {
+    //     #pragma unroll
+    //     for(int i=1; i<WARP; i++) {
+    //         ptr[idx+i] = OP::apply(ptr[idx+i-1], ptr[idx+i]);
+    //     }
+    // }
     return OP::remVolatile(ptr[idx]);
 }
 
@@ -436,8 +449,8 @@ copyFromGlb2ShrMem( const uint32_t glb_offs
 ) {
     #pragma unroll
     for(uint32_t i=0; i<CHUNK; i++) {
-        uint32_t loc_ind = threadIdx.x*CHUNK + i;
-        // uint32_t loc_ind = 
+        // uint32_t loc_ind = threadIdx.x*CHUNK + i;
+        uint32_t loc_ind = CHUNK * i + threadIdx.x;
         uint32_t glb_ind = glb_offs + loc_ind;
         T elm = ne;
         if(glb_ind < N) { elm = d_inp[glb_ind]; }
@@ -467,7 +480,8 @@ copyFromShr2GlbMem( const uint32_t glb_offs
 ) {
     #pragma unroll
     for (uint32_t i = 0; i < CHUNK; i++) {
-        uint32_t loc_ind = threadIdx.x * CHUNK + i;
+        // uint32_t loc_ind = threadIdx.x * CHUNK + i;
+        uint32_t loc_ind = CHUNK * i + threadIdx.x;
         uint32_t glb_ind = glb_offs + loc_ind;
         if (glb_ind < N) {
             T elm = const_cast<const T&>(shmem_red[loc_ind]);
@@ -736,6 +750,7 @@ sgmScanIncWarp(volatile typename OP::RedElTp* ptr, volatile F* flg, const uint32
     #pragma unroll
     for(uint32_t i=0; i<lgWARP; i++) {
         const uint32_t p = (1<<i);
+
         if( lane >= p ) {
             if(flg[idx] == 0) { ptr[idx] = OP::apply(ptr[idx-p], ptr[idx]); }
             flg[idx] = flg[idx-p] | flg[idx];
