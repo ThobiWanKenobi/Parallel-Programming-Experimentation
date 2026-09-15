@@ -242,6 +242,7 @@ scanIncBlock(volatile typename OP::RedElTp* ptr, const uint32_t idx) {
     if (warpid > 0) {
         res = OP::apply(ptr[warpid-1], res);
     }
+    __syncthreads();
 
     return res;
 }
