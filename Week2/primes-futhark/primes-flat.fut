@@ -4,6 +4,27 @@
 -- compiled input { 10000000i64 }
 -- output @ ref10000000.out
 
+let sgmScan [n] 't
+            (op: t -> t -> t)
+            (ne: t)
+            (flags: [n]bool)
+            (vals: [n]t)
+            : [n]t =
+  scan (\(f1, v1) (f2, v2) -> (f1 || f2, if f2 then v2 else op v1 v2))
+       (false, ne)
+       (zip flags vals)
+  |> unzip
+  |> (.1)
+
+def exclusive_scan [n] 't (op: t -> t -> t) (ne: t) (xs: [n]t) : [n]t =
+  let incl = scan op ne xs
+  in map (\i -> if i == 0 then ne else incl[i-1]) (iota n)
+
+def sgmScan_exc [n] 't (op: t -> t -> t) (ne: t)
+                       (flags: [n]bool) (arr: [n]t) : [n]t =
+  let incl = sgmScan op ne flags arr
+  in map (\i -> if i == 0 || flags[i] then ne else incl[i-1]) (iota n)
+
 let primesFlat (n: i64) : []i64 =
   let sq_primes = [2i64, 3i64, 5i64, 7i64]
   let len = 8i64
@@ -40,25 +61,20 @@ let primesFlat (n: i64) : []i64 =
       --                             in  map (\ j -> j * p ) (map (+2) (iota mm1))
       --                     ) sq_primes
 
-      let m = map (\p -> len / p) sq_primes
-      let mm1 = map (-1) m
       -- let iot = iota mm1
-      let inds = scan (+) 0 mm1 |> map2 (\(p, t) -> t - p) mm1
-      let size = (last inds) + (last arr)
-      let flag = scatter (replicate size 0) inds mm1
-      let tmp = replicate size 1
-      let iot = sgmScan (+) 0 flag temp -- probably need to make sgmScan exclusive
+      let inds = exclusive_scan (+) 0 mult_lens 
+      let flag = scatter (replicate flat_size 0) inds mult_lens
+      let bflag = map (!= 0) flag
+      let iot = sgmScan_exc (+) 0 bflag (replicate flat_size 1)
 
       let twom = map (+2) iot
       -- let rp = replicate mm1 p
-      let inds2 = scan (+) 0 mm1 |> map2 (\(p, t) -> t - p) mm1
-      let size2 = (last inds2) + (last mm1)
-      let flag2 = scatter (replicate size2 0) inds2 mm1
-      let vals = scatter (replicate size2 0) inds2 sq_primes
-      let rp = sgmScan (+) 0 flag2 vals -- probably need to make sgmScan exclusive
-      let composite = map2 (\(j, p) -> j*p) twom rp
+      let vals = scatter (replicate flat_size 0) inds sq_primes
+      let rp = sgmScan (+) 0 bflag vals
+
+      let composite = map (\(j, p) -> j*p) (zip twom rp)
       
-      let not_primes = reduce (++) [] composite
+      let not_primes = composite
 
       -- If not_primes is correctly computed, then the remaining
       -- code is correct and will do the job of computing the prime
