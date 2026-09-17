@@ -15,7 +15,11 @@ mkFlags(int mat_rows, int* mat_shp_sc_d, char* flags_d) {
     const unsigned int gid = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (gid < mat_rows) {
-        flags_d[mat_shp_sc_d[gid]] = 1;
+        if (gid == 0) {
+            flags_d[gid] = 1;
+        } else {
+            flags_d[mat_shp_sc_d[gid-1]] = 1;
+        }
     }
 }
 
@@ -33,9 +37,7 @@ select_last_in_sgm(int mat_rows, int* mat_shp_sc_d, float* tmp_scan, float* res_
     const unsigned int gid = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (gid < mat_rows) {
-        if (mat_shp_sc_d[gid] == 1) {
-            res_vct_d[gid] = tmp_scan[gid];
-        }
+        res_vct_d[gid] = tmp_scan[mat_shp_sc_d[gid]-1];
     }
 }
 

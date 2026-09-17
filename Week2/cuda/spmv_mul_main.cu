@@ -152,7 +152,7 @@ int SparseMatVctMult(int block_size, int mat_rows, int vct_size) {
         // The total number of non-zero elements in the matrix is `tot_size`.
         // The number of rows in the matrix is `mat_rows`.
         // The block size of the CUDA block is `block_size`
-        uint32_t num_blocks     = tot_size / block_size;  // TODO: replace this dummy value.
+        uint32_t num_blocks     = (tot_size + block_size - 1) / block_size;  // TODO: replace this dummy value.
         uint32_t num_blocks_shp = num_blocks;  // TODO: replace this dummy value.
 
         { // copy-in stage
@@ -162,7 +162,7 @@ int SparseMatVctMult(int block_size, int mat_rows, int vct_size) {
             cudaMemcpy(vct_d,      vct,      vct_size*sizeof(float), cudaMemcpyHostToDevice);
             CUDASSERT(cudaPeekAtLastError());
         }
-
+        
         { // dry run to manifest the allocations in memory
             scanInc< Add<int> > ( block_size, mat_rows, mat_shp_sc_d, mat_shp_d, d_tmp_int );
             replicate0<<< num_blocks, block_size >>> ( tot_size, flags_d );
